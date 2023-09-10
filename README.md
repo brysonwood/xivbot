@@ -1,1 +1,1 @@
-# xivbot
+# Final Fantasy XIV Bot
