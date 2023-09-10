@@ -11,11 +11,6 @@ const client = new Client({intents: [
 
 const prefix = '!';
 
-// Testing vars
-const xivName = "Kage Dragneel";
-const xivServer = "Cactuar";
-
-
 client.on("ready", () => {
   console.log("Bot is ready!");
 });
@@ -32,12 +27,22 @@ client.on("messageCreate", msg  => {
       fetch(xivApi+'/character/search?name='+argsArray[0]+' '+argsArray[1]+'&server='+argsArray[2], {
         mode: 'cors' 
       })
-      .then(response => response.json())
-      
-      .then(data => {
-        msg.channel.send(data.Results[0].Lang)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Name not found.');
+        }
+        
+        return response.json();
       })
-    } else {
+      .then(data => {
+        msg.channel.send(data.Results[0].Lang);
+      })
+      // This catch isn't catching anything. Fix.--------------------
+      .catch(error => {
+        console.log(error);
+        msg.channel.send('Your name was not found in the database.');
+      })
+    } else if (argsArray.length !== 3) {
       console.log('Name too short');
       msg.channel.send('Please enter your full information in this format: First Last Server');
     }
