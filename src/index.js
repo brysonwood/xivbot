@@ -19,28 +19,26 @@ client.on("ready", () => {
 function charSearch(charSearchType, charSearchResponse, message, firstName, lastName, server) {
 
   const charSearchy = charSearchResponse;
-  fetch(xivApi+'/character/search?name='+firstName+' '+lastName+'&server='+server, {
-    mode: 'cors' 
-  })
-  // Checked if the API responded with a valid thing. If it did saves it.
-  .then(response => {
-    if (!response.ok) {
-      throw new Error('Name not found.');
-    }
+  axios
+    .get(`${xivApi}/character/search`, {
+      params: {
+        name: `${firstName} ${lastName}`,
+        server: server,
+      },
+    })
+    .then((response) => {
+      if (!response.data || response.data.Results.length === 0) {
+        throw new Error('Name not found.');
+      }
 
-    return response.json();
-  })
-  // Send the data for the language of the character.
-  .then(data => {
-    const property = data.Results[0][charSearchType];
-    console.log(property);
-    message.channel.send(property);
-  })
-  // Catch any errors (Only one I can think of is they are not found in the API).
-  .catch(error => {
-    console.log(error);
-    message.channel.send('Your name was not found in the database.');
-  })
+      const property = response.data.Results[0][charSearchType];
+      console.log(property);
+      message.channel.send(property);
+    })
+    .catch((error) => {
+      console.log(error);
+      message.channel.send('Your name was not found in the database.');
+    });
 }
 
 client.on("messageCreate", msg  => {
