@@ -17,9 +17,7 @@ client.on("ready", () => {
 });
 
 
-function charSearch(charSearchType, charSearchResponse, message, firstName, lastName, server) {
-
-  const charSearchy = charSearchResponse;
+function charSearch(charSearchType, message, firstName, lastName, server) {
   axios
     .get(`${xivApi}/character/search`, {
       params: {
@@ -33,12 +31,13 @@ function charSearch(charSearchType, charSearchResponse, message, firstName, last
       }
 
       const property = response.data.Results[0][charSearchType];
-      console.log(property);
-      message.channel.send(property);
+      propertyString = property.toString();
+      console.log(propertyString);
+      message.channel.send(propertyString);
     })
     .catch((error) => {
       console.log(error);
-      message.channel.send('Your name was not found in the database.');
+      message.channel.send('Your name was not found.');
     });
 }
 
@@ -148,7 +147,7 @@ function lodestoneSearch(message, lodestoneID) {
     })
     .catch((error) => {
       console.log(error);
-      message.channel.send('Your name was not found in the database.');
+      message.channel.send('Your ID was not found.');
     });
 }
 
@@ -159,30 +158,50 @@ client.on("messageCreate", msg  => {
   const argsArray = args;
   const command = args.shift().toLowerCase();
   
+  console.log("Message received.");
+  
+  // Responds with character name, server, data center, and job levels.
+  if (command === 'lodestone') {
+    console.log("Message type: lodestone\n----");
+    if (argsArray.length === 1) {
+      lodestoneSearch(msg, argsArray[0]);
+    } else {
+      console.log('ID not in the right format.');
+      msg.channel.send('Please enter your full information in this format: \n!lodestone [ID]');
+    }
+  }
+  // Responds with character's chosen languages.
   if (command === 'language') {
+    console.log("Message type: language\n----");
     if (argsArray.length === 3) {
-      charSearch('Lang', 'Hello', msg, argsArray[0], argsArray[1], argsArray[2]);
-    } else if (argsArray.length !== 3) {
-      console.log('Name too short');
-      msg.channel.send('Please enter your full information in this format: First Last Server');
+      charSearch('Lang', msg, argsArray[0], argsArray[1], argsArray[2]);
+    } else  {
+      console.log('Too many / Not enough words.');
+      msg.channel.send('Please enter your full information in this format: \n!language [First Name] [Last Name] [Server]');
     }
   } 
 
+  // Responds with character's avatar from the Lodestone.
   if (command === 'avatar') {
+    console.log("Message type: avatar\n----");
     if (argsArray.length === 3) {
-      charSearch('Avatar', 'Hello', msg, argsArray[0], argsArray[1], argsArray[2]);
-    } else if (argsArray.length !== 3) {
-      console.log('Name too short');
-      msg.channel.send('Please enter your full information in this format: First Last Server');
+      charSearch('Avatar', msg, argsArray[0], argsArray[1], argsArray[2]);
+    } else {
+      console.log('Too many / Not enough words.');
+      msg.channel.send('Please enter your full information in this format: \n!avatar [First Name] [Last Name] [Server]');
     }
     
   } 
 
-  if (command === 'lodestone') {
-    lodestoneSearch(msg, argsArray[0]);
+  // Responds with character's ID from the Lodestone.
+  if (command === 'id') {
+    if (argsArray.length === 3) {
+      charSearch('ID', msg, argsArray[0], argsArray[1], argsArray[2]);
+    } else {
+      console.log('Too many / Not enough words.');
+      msg.channel.send('Please enter your full information in this format: \n!id [First Name] [Last Name] [Server]');
+    }
   }
-
-  console.log("Message received.\n----");
 });
 
 client.login(process.env.CLIENT_TOKEN);
