@@ -1,7 +1,7 @@
 require('dotenv').config();
 const axios = require('axios');
-const lib = require('lib')({token: process.env.STDLIB_SECRET_TOKEN});
 
+// Api constant for clarity.
 const xivApi = 'https://xivapi.com';
 
 const {Client, GatewayIntentBits, EmbedBuilder, PermissionsBitField, Permissions, messageLink, Embed} = require('discord.js');
@@ -10,13 +10,15 @@ const client = new Client({intents: [
   GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent
 ]});
 
+// Prefix declared for commands. (Want to add ability to change in the future so it doesn't
+// interfere with other bots in the channel).
 const prefix = '!';
 
 client.on("ready", () => {
   console.log("Bot is ready!");
 });
 
-
+// Searches given the type of search, message for discord.js to use, first name, last name, and server.
 function charSearch(charSearchType, message, firstName, lastName, server) {
   axios
     .get(`${xivApi}/character/search`, {
@@ -41,11 +43,7 @@ function charSearch(charSearchType, message, firstName, lastName, server) {
     });
 }
 
-// Started the process of getting the lodestoneSearch function going, I found a solution but it
-// doesn't use the params .get feature of axios that I want it to use.
-//
-// Eventually I'd like to have the functionality to parse all information from here, in addition to by
-// name/server.
+// Searches given the message for discord.js to use and lodestone ID.
 function lodestoneSearch(message, lodestoneID) {
   const lodestoneUrl = `${xivApi}/character/${lodestoneID}`;
 
@@ -95,7 +93,7 @@ function lodestoneSearch(message, lodestoneID) {
       // Initialize healerEmbed
       const healerEmbed = new EmbedBuilder()
       healerEmbed.setColor(0x346624);
-      //healerEmbed.setTitle("Healers");
+      
 
       // Initialize dpsEmbed
       const dpsEmbed = new EmbedBuilder()
@@ -105,29 +103,35 @@ function lodestoneSearch(message, lodestoneID) {
       // Initialize dohEmbed
       const dohEmbed = new EmbedBuilder()
       dohEmbed.setColor(0xbfa34c);
-      //dohEmbed.setTitle("DoH");
+      
       // Initialize dolEmbed
       const dolEmbed = new EmbedBuilder()
       dolEmbed.setColor(0xbf791d);
-      //dolEmbed.setTitle("DoL");
+      
 
+      // For every element that was in the foundClassJobs array, iterate.
       for (let i = 0; i < counter; i++) {
+        // DPS embed.
         if (i < 4) {
           tankEmbed.addFields( 
             { name: foundClassName[i], value: `${foundClassJob[i]}`, inline: true}
           )
+          // Healer embed.
         } else if (i < 8) {
           healerEmbed.addFields( 
             { name: foundClassName[i], value: `${foundClassJob[i]}`, inline: true}
           )
+          // DPS embed.
         } else if (i < 20) {
           dpsEmbed.addFields( 
             { name: foundClassName[i], value: `${foundClassJob[i]}`, inline: true}
           )
+          // DoH embed.
         } else if (i < 28) {
           dohEmbed.addFields( 
             { name: foundClassName[i], value: `${foundClassJob[i]}`, inline: true}
           )
+          // DoL embed.
         } else if (i < 31) {
           dolEmbed.addFields( 
             { name: foundClassName[i], value: `${foundClassJob[i]}`, inline: true}
@@ -137,6 +141,7 @@ function lodestoneSearch(message, lodestoneID) {
         }
       }
 
+      // Send all of the embeds.
       message.channel.send({ embeds: [lodestoneEmbed] });
       message.channel.send({ embeds: [tankEmbed] });
       message.channel.send({ embeds: [healerEmbed] });
@@ -145,6 +150,7 @@ function lodestoneSearch(message, lodestoneID) {
       message.channel.send({ embeds: [dolEmbed] });
 
     })
+    // Catch-all for errors, print to console.
     .catch((error) => {
       console.log(error);
       message.channel.send('Your ID was not found.');
@@ -154,10 +160,14 @@ function lodestoneSearch(message, lodestoneID) {
 client.on("messageCreate", msg  => {
   if (!msg.content.startsWith(prefix) || msg.author.bot) return;
     
+  // Slice the content of the command at spaces.
   const args = msg.content.slice(prefix.length).split(/ +/);
+  // Put args[] into argsArray[].
   const argsArray = args;
+  // Shift all args to lowercase so things don't break.
   const command = args.shift().toLowerCase();
   
+  // Print when message has been received and slices properly.
   console.log("Message received.");
   
   // Responds with character name, server, data center, and job levels.
@@ -204,4 +214,5 @@ client.on("messageCreate", msg  => {
   }
 });
 
+// Log into Discord bot.
 client.login(process.env.CLIENT_TOKEN);
