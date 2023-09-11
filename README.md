@@ -9,7 +9,7 @@ Responds with character name, server, data center, and job levels.
 Responds with character's chosen languages.
 
 ### !avatar [First Name] [Last Name] [Server]
-Responds 
+Responds with character's avatar from the Lodestone.
 
 
 ## Status
