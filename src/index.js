@@ -10,8 +10,8 @@ const client = new Client({intents: [
   GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent
 ]});
 
-// Prefix declared for commands. (Want to add ability to change in the future so it doesn't
-// interfere with other bots in the channel).
+// Prefix declared for commands. 
+// TODO: add ability to change prefix.
 const prefix = '!';
 
 client.on("ready", () => {
