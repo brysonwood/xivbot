@@ -18,6 +18,8 @@ Responds with character's ID from the Lodestone.
 Responds with the list of servers in that region.
 List of servers: NA/North America, EU/Europe, JP/Japan, OCE/Oceania.
 
-
 ## Status
 This Discord bot is currently a work in progress. Things will change and be added as I have time.
+
+## Contact Information
+You can contact me at any time at <a href="mailto:mail@brysonwood.com">mail@brysonwood.com</a> about this project or anything else.
